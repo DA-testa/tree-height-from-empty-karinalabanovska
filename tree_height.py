@@ -3,23 +3,53 @@
 import sys
 import threading
 
+class Node:
+    def __init__(self, index):
+        self.index = index
+        self.children = []
+        self.parent = None
 
 def compute_height(n, parents):
-    # Write this function
-    max_height = 0
-    # Your code here
-    return max_height
+    # Initialize an array of nodes
+    nodes = [Node(i) for i in range(n)]
+    
+    # Construct the tree
+    root_index = None
+    for i in range(n):
+        parent_index = parents[i]
+        if parent_index == -1:
+            root_index = i
+        else:
+            parent_node = nodes[parent_index]
+            parent_node.children.append(nodes[i])
+            nodes[i].parent = parent_node
+            
+    # Calculate the height of the tree
+    height = 0
+    nodes_at_current_level = [nodes[root_index]]
+    while nodes_at_current_level:
+        height += 1
+        nodes_at_next_level = []
+        for node in nodes_at_current_level:
+            nodes_at_next_level.extend(node.children)
+        nodes_at_current_level = nodes_at_next_level
+    
+    return height
 
 
 def main():
-    # implement input form keyboard and from files
-    
-    # let user input file name to use, don't allow file names with letter a
-    # account for github input inprecision
-    
-    # input number of elements
-    # input values in one variable, separate with space, split these values in an array
-    # call the function and output it's result
+    # Get user input for file name
+    file_name = input("Enter file name: ")
+    while 'a' in file_name:
+        file_name = input("Invalid file name, enter a new one: ")
+
+    # Read input from file
+    with open(file_name, 'r') as f:
+        n = int(f.readline())
+        parents = list(map(int, f.readline().split()))
+
+    # Calculate and output the height of the tree
+    print(compute_height(n, parents))
 
 
 # In Python, the default limit on recursion depth is rather low,
