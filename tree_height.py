@@ -16,18 +16,18 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    # Traverse the tree using DFS to calculate the height of the tree
-    def dfs(node, height):
-        nonlocal max_height
+    # Traverse the tree using DFS with a stack to calculate the height of the tree
+    stack = [(root, 1)]
+    max_height = 0
+    while stack:
+        node, height = stack.pop()
         if not tree[node]:
             # Leaf node
             max_height = max(max_height, height)
-            return
-        for child in tree[node]:
-            dfs(child, height+1)
+        else:
+            for child in tree[node]:
+                stack.append((child, height+1))
 
-    max_height = 0
-    dfs(root, 1)
     return max_height
 
 def main():
