@@ -16,15 +16,22 @@ def compute_height(n, parents):
         else:
             tree[parent].append(i)
 
-    # Traverse the tree using DFS with a stack to calculate the height of the tree
+    # Traverse the tree using DFS with memoization to calculate the height of the tree
+    heights = [0] * n
     stack = [(root, 1)]
     max_height = 0
     while stack:
         node, height = stack.pop()
-        if not tree[node]:
+        if heights[node] > 0:
+            # Node has already been visited, use memoized height
+            max_height = max(max_height, height + heights[node] - 1)
+        elif not tree[node]:
             # Leaf node
+            heights[node] = 1
             max_height = max(max_height, height)
         else:
+            # Internal node
+            heights[node] = height
             for child in tree[node]:
                 stack.append((child, height+1))
 
