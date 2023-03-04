@@ -4,50 +4,50 @@ import sys
 import threading
 
 def compute_height(n, parents):
-    # Create an array to represent the tree where each index represents a node and its value is the parent of that node
-    tree = [[] for i in range(n)]
-    root = None
-
-    # Build the tree
-    for i in range(n):
-        parent = parents[i]
-        if parent == -1:
-            root = i
-        else:
-            tree[parent].append(i)
-
-    # Traverse the tree using DFS with memoization to calculate the height of the tree
+    # create an array to store the height of each node, initialized to 0
     heights = [0] * n
-    stack = [(root, 1)]
-    max_height = 0
-    while stack:
-        node, height = stack.pop()
-        if heights[node] > 0:
-            # Node has already been visited, use memoized height
-            max_height = max(max_height, height + heights[node] - 1)
-        elif not tree[node]:
-            # Leaf node
-            heights[node] = 1
-            max_height = max(max_height, height)
-        else:
-            # Internal node
-            heights[node] = height
-            for child in tree[node]:
-                stack.append((child, height+1))
-
-    return max_height
+    
+    # iterate over each node
+    for i in range(n):
+        # if the height of the node hasn't been computed yet
+        if heights[i] == 0:
+            # calculate the height of the node and its ancestors
+            height = 1
+            parent = parents[i]
+            while parent != -1:
+                if heights[parent] != 0:
+                    # if the height of the parent has already been computed,
+                    # use that to calculate the height of this node
+                    height += heights[parent]
+                    break
+                height += 1
+                parent = parents[parent]
+            # store the height of the node in the array
+            heights[i] = height
+    
+    # return the maximum height
+    return max(heights)
 
 def main():
-    # Read input values
-    n = int(input())
-    parents = list(map(int, input().split()))
+    # read input from standard input or files
+    if len(sys.argv) == 1:
+        # read input from standard input
+        n = int(input())
+        parents = list(map(int, input().split()))
+    else:
+        # read input from file
+        filename = sys.argv[1]
+        with open(filename, 'r') as f:
+            n = int(f.readline())
+            parents = list(map(int, f.readline().split()))
+    
+    # compute the height of the tree
+    height = compute_height(n, parents)
+    
+    # output the result
+    print(height)
 
-    # Compute and output the height of the tree
-    print(compute_height(n, parents))
-
-# Set the recursion limit and stack size for the main thread
+# Increase the recursion limit and stack size for large trees
 sys.setrecursionlimit(10**7)
 threading.stack_size(2**27)
-
-# Start the main thread
 threading.Thread(target=main).start()
